@@ -30,7 +30,7 @@ const values = [
 
 export default function About() {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
     <section id="about" ref={ref} className="relative py-28 lg:py-36 overflow-hidden">

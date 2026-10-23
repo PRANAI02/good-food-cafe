@@ -3,7 +3,6 @@ import Hero from "@/components/Hero";
 import About from "@/components/About";
 import SignatureDishes from "@/components/SignatureDishes";
 import FoodShowcase from "@/components/FoodShowcase";
-import Gallery from "@/components/Gallery";
 import Reviews from "@/components/Reviews";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import Reservation from "@/components/Reservation";
@@ -22,7 +21,6 @@ export default function Home() {
         <About />
         <SignatureDishes />
         <FoodShowcase />
-        <Gallery />
         <Reviews />
         <WhyChooseUs />
         <Reservation />

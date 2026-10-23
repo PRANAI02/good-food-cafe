@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
+import { ModalProvider } from "@/context/ModalContext";
+import GlobalModals from "@/components/GlobalModals";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -56,7 +58,12 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} ${cormorant.variable}`}
       style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
     >
-      <body className="antialiased overflow-x-hidden">{children}</body>
+      <body className="antialiased overflow-x-hidden">
+        <ModalProvider>
+          {children}
+          <GlobalModals />
+        </ModalProvider>
+      </body>
     </html>
   );
 }

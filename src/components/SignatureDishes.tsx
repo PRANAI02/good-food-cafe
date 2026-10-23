@@ -114,14 +114,18 @@ function DishCard({ dish, index }: { dish: (typeof dishes)[0]; index: number }) 
 
         {/* Badge */}
         <div
-          className="absolute top-4 left-4 px-3 py-1 rounded-full text-[11px] font-medium text-white tracking-wide"
-          style={{ background: dish.color }}
+          className="absolute top-4 left-4 px-3.5 py-1.5 rounded-lg text-[11px] font-semibold text-white tracking-wide"
+          style={{
+            background: `linear-gradient(135deg, ${dish.color} 0%, ${dish.color}CC 100%)`,
+            boxShadow: `0 4px 16px ${dish.color}66, inset 0 1px 0 rgba(255,255,255,0.25)`,
+            border: "1px solid rgba(255,255,255,0.2)",
+          }}
         >
           {dish.badge}
         </div>
 
         {/* Tag */}
-        <div className="absolute top-4 right-4 px-3 py-1 rounded-full glass text-[11px] font-medium text-white/90 tracking-wide">
+        <div className="absolute top-4 right-4 px-3 py-1 rounded-lg glass-dark text-[11px] font-medium text-white tracking-wide">
           {dish.tag}
         </div>
 
@@ -179,10 +183,10 @@ export default function SignatureDishes() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="dishes" className="relative py-28 lg:py-36">
+    <section id="dishes" className="relative z-0 py-28 lg:py-36">
       {/* Subtle background */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none -z-10"
         style={{
           background:
             "linear-gradient(180deg, var(--cream-light) 0%, rgba(44,74,46,0.04) 50%, var(--cream-light) 100%)",

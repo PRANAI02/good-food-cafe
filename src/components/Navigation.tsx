@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X, Leaf } from "lucide-react";
+import { useModal } from "@/context/ModalContext";
 
 const navLinks = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
   { label: "Menu", href: "#dishes" },
-  { label: "Gallery", href: "#gallery" },
   { label: "Reviews", href: "#reviews" },
   { label: "Reserve", href: "#reservation" },
   { label: "Location", href: "#location" },
@@ -19,6 +19,7 @@ export default function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("home");
   const { scrollY } = useScroll();
+  const { openReserve, openOrder } = useModal();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 60);
@@ -74,7 +75,7 @@ export default function Navigation() {
             <div className="leading-none">
               <p
                 className="text-[0.65rem] font-medium tracking-[0.15em] uppercase"
-                style={{ color: "var(--olive)" }}
+                style={{ color: scrolled ? "var(--olive)" : "rgba(201,168,76,0.9)" }}
               >
                 Nature&apos;s Basket
               </p>
@@ -82,7 +83,7 @@ export default function Navigation() {
                 className="font-semibold text-sm tracking-wide"
                 style={{
                   fontFamily: "var(--font-playfair)",
-                  color: "var(--forest)",
+                  color: scrolled ? "var(--forest)" : "#FFFFFF",
                 }}
               >
                 The Good Food Cafe
@@ -92,39 +93,47 @@ export default function Navigation() {
 
           {/* Desktop nav */}
           <ul className="hidden lg:flex items-center gap-7">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <button
-                  onClick={() => scrollTo(link.href)}
-                  className={`nav-link text-sm font-medium transition-colors duration-300 ${
-                    activeLink === link.href.replace("#", "")
-                      ? "text-[var(--forest)]"
-                      : "text-[var(--dark-mid)] hover:text-[var(--forest)]"
-                  } ${activeLink === link.href.replace("#", "") ? "active" : ""}`}
-                >
-                  {link.label}
-                </button>
-              </li>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = activeLink === link.href.replace("#", "");
+              return (
+                <li key={link.href}>
+                  <button
+                    onClick={() => scrollTo(link.href)}
+                    className={`nav-link text-sm font-medium transition-colors duration-300 ${
+                      isActive ? "active" : ""
+                    } ${
+                      scrolled
+                        ? isActive
+                          ? "text-[var(--forest)]"
+                          : "text-[var(--dark-mid)] hover:text-[var(--forest)]"
+                        : isActive
+                          ? "text-white"
+                          : "text-white/75 hover:text-white"
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
 
           {/* CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <a
-              href="https://maps.app.goo.gl/tQUgFiwQteX2hpBv9"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={openReserve}
               className="btn-primary ripple-btn text-sm py-2.5 px-5"
             >
               <span>Reserve a Table</span>
-            </a>
+            </button>
           </div>
 
           {/* Mobile hamburger */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="lg:hidden p-2 rounded-xl"
-            style={{ color: "var(--forest)" }}
+            style={{ color: scrolled ? "var(--forest)" : "#FFFFFF" }}
             aria-label="Toggle menu"
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -179,22 +188,20 @@ export default function Navigation() {
                 transition={{ delay: navLinks.length * 0.055 + 0.05, duration: 0.4 }}
                 className="space-y-3"
               >
-                <a
-                  href="https://maps.app.goo.gl/tQUgFiwQteX2hpBv9"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary w-full justify-center block text-center"
+                <button
+                  type="button"
+                  onClick={() => { openReserve(); setMenuOpen(false); }}
+                  className="btn-primary w-full justify-center flex text-center"
                 >
                   Reserve a Table
-                </a>
-                <a
-                  href="https://maps.app.goo.gl/tQUgFiwQteX2hpBv9"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-secondary w-full justify-center block text-center"
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { openOrder(); setMenuOpen(false); }}
+                  className="btn-secondary w-full justify-center flex text-center"
                 >
                   Order Online
-                </a>
+                </button>
               </motion.div>
             </div>
           </motion.div>

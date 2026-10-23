@@ -119,31 +119,31 @@ export default function WhyChooseUs() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-              className="mt-12 inline-flex items-end gap-4 p-8 rounded-3xl"
+              className="mt-12 flex flex-row items-end gap-4 p-6 sm:p-8 rounded-3xl w-full sm:w-auto"
               style={{
                 background: "linear-gradient(135deg, var(--forest) 0%, #1A2E1B 100%)",
                 boxShadow: "0 30px 80px rgba(44,74,46,0.25)",
               }}
             >
-              <div>
+              <div className="flex-1 sm:flex-none">
                 <p
-                  className="text-6xl font-bold text-white leading-none"
+                  className="text-5xl sm:text-6xl font-bold text-white leading-none"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
-                  4.5
+                  4.8
                   <span style={{ color: "var(--gold)" }}>★</span>
                 </p>
                 <p className="text-white/60 text-sm mt-2">Average Google Rating</p>
               </div>
-              <div className="h-14 w-px bg-white/20" />
-              <div>
+              <div className="h-14 w-px bg-white/20 flex-shrink-0" />
+              <div className="flex-1 sm:flex-none">
                 <p
                   className="text-4xl font-bold text-white leading-none"
                   style={{ fontFamily: "var(--font-playfair)" }}
                 >
-                  200<span style={{ color: "var(--gold)" }}>+</span>
+                  177
                 </p>
-                <p className="text-white/60 text-sm mt-2">Verified Reviews</p>
+                <p className="text-white/60 text-sm mt-2">Google Reviews</p>
               </div>
             </motion.div>
           </div>

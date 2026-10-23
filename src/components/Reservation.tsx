@@ -1,16 +1,14 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { Calendar, Clock, MapPin, Phone } from "lucide-react";
+import { useModal } from "@/context/ModalContext";
 
 export default function Reservation() {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
+  const { openReserve } = useModal();
   return (
-    <section id="reservation" ref={ref} className="relative py-28 lg:py-36 overflow-hidden">
+    <section id="reservation" className="relative py-28 lg:py-36 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <Image
@@ -29,12 +27,13 @@ export default function Reservation() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left text */}
           <div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
               className="flex items-center gap-3 mb-6"
             >
               <div className="h-px w-12 bg-gradient-to-r from-transparent to-[var(--gold)]" />
@@ -48,9 +47,10 @@ export default function Reservation() {
 
             <motion.h2
               initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: 0.1, duration: 0.8 }}
-              className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+              className="text-3xl sm:text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight"
               style={{ fontFamily: "var(--font-playfair)" }}
             >
               Save your{" "}
@@ -69,7 +69,8 @@ export default function Reservation() {
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: 0.2 }}
               className="text-white/70 text-lg mb-10 leading-relaxed"
               style={{ fontFamily: "var(--font-cormorant)", fontSize: "1.2rem" }}
@@ -79,29 +80,17 @@ export default function Reservation() {
               of the rest.
             </motion.p>
 
-            {/* Info items */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: 0.3 }}
               className="space-y-4"
             >
               {[
-                {
-                  icon: Clock,
-                  label: "Hours",
-                  value: "Mon – Sun: 8:00 AM – 10:00 PM",
-                },
-                {
-                  icon: MapPin,
-                  label: "Location",
-                  value: "Nature's Basket, 1 MG Road, Bengaluru – 560008",
-                },
-                {
-                  icon: Phone,
-                  label: "Phone",
-                  value: "+91 80 4040 0000",
-                },
+                { icon: Clock,  label: "Hours",    value: "Mon – Sun: 8:00 AM – 10:00 PM" },
+                { icon: MapPin, label: "Location", value: "Nature's Basket, 1 MG Road, Bengaluru – 560008" },
+                { icon: Phone,  label: "Phone",    value: "+91 80500 50555" },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-4">
                   <div
@@ -111,9 +100,7 @@ export default function Reservation() {
                     <item.icon size={18} style={{ color: "var(--gold)" }} />
                   </div>
                   <div>
-                    <p className="text-xs tracking-wide text-white/40 uppercase mb-0.5">
-                      {item.label}
-                    </p>
+                    <p className="text-xs tracking-wide text-white/40 uppercase mb-0.5">{item.label}</p>
                     <p className="text-white/85 text-sm">{item.value}</p>
                   </div>
                 </div>
@@ -124,11 +111,12 @@ export default function Reservation() {
           {/* Right card */}
           <motion.div
             initial={{ opacity: 0, x: 60 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ delay: 0.15, duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
           >
             <div
-              className="p-10 rounded-3xl"
+              className="p-8 lg:p-10 rounded-3xl"
               style={{
                 background: "rgba(245,239,224,0.08)",
                 backdropFilter: "blur(24px)",
@@ -139,9 +127,7 @@ export default function Reservation() {
               <div className="text-center mb-8">
                 <div
                   className="inline-flex w-16 h-16 rounded-2xl items-center justify-center mb-4"
-                  style={{
-                    background: "linear-gradient(135deg, var(--gold) 0%, var(--wood) 100%)",
-                  }}
+                  style={{ background: "linear-gradient(135deg, var(--gold) 0%, var(--wood) 100%)" }}
                 >
                   <Calendar size={28} color="white" />
                 </div>
@@ -151,28 +137,21 @@ export default function Reservation() {
                 >
                   Make a Reservation
                 </h3>
-                <p className="text-white/50 text-sm">
-                  Tap below to book via Google Maps
-                </p>
+                <p className="text-white/50 text-sm">Tap below to book via Google Maps</p>
               </div>
 
               <div className="space-y-4">
-                <a
-                  href="https://maps.app.goo.gl/tQUgFiwQteX2hpBv9"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-gold w-full justify-center text-center ripple-btn"
-                  style={{ display: "flex" }}
+                <button
+                  type="button"
+                  onClick={openReserve}
+                  className="btn-gold w-full justify-center ripple-btn flex"
                 >
                   <Calendar size={18} />
                   <span>Reserve a Table</span>
-                </a>
+                </button>
                 <a
-                  href="https://maps.app.goo.gl/tQUgFiwQteX2hpBv9"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full text-sm font-medium text-white/80 hover:text-white transition-colors"
-                  style={{ border: "1px solid rgba(255,255,255,0.2)" }}
+                  href="tel:+918050050555"
+                  className="btn-outline w-full justify-center text-sm font-medium"
                 >
                   <Phone size={16} />
                   <span>Call to Reserve</span>

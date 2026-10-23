@@ -1,24 +1,22 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { ShoppingBag, Clock, Star, Truck } from "lucide-react";
+import { useModal } from "@/context/ModalContext";
 
 const highlights = [
-  { icon: Clock, label: "30 Min Delivery", desc: "Fresh to your door" },
-  { icon: Star, label: "Same Great Quality", desc: "Packaged with care" },
-  { icon: Truck, label: "MG Road & Nearby", desc: "Delivery zone" },
+  { icon: Clock, label: "30 Min Delivery", desc: "Fresh to your door, still warm" },
+  { icon: Star, label: "Same Great Quality", desc: "Packaged to preserve every flavour" },
+  { icon: Truck, label: "MG Road & Nearby", desc: "Delivery zone across Bengaluru CBD" },
 ];
 
 export default function OrderOnline() {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
+  const { openReserve, openOrder } = useModal();
   return (
-    <section id="order" ref={ref} className="relative py-28 lg:py-36 overflow-hidden">
+    <section id="order" className="relative z-0 py-28 lg:py-36 overflow-hidden">
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none -z-10"
         style={{
           background:
             "linear-gradient(180deg, var(--cream-light) 0%, rgba(44,74,46,0.06) 50%, var(--cream-light) 100%)",
@@ -26,64 +24,39 @@ export default function OrderOnline() {
       />
 
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
           {/* Image side */}
           <motion.div
             initial={{ opacity: 0, x: -60 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
-            className="relative"
+            className="relative order-2 lg:order-1"
           >
             <div
-              className="relative h-[480px] rounded-3xl overflow-hidden"
+              className="relative h-[420px] lg:h-[520px] rounded-3xl overflow-hidden"
               style={{ boxShadow: "0 40px 100px rgba(44,74,46,0.2)" }}
             >
               <Image
-                src="https://images.unsplash.com/photo-1526367790999-0150786686a2?w=800&q=85&fit=crop"
-                alt="Food delivery"
+                src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=85&fit=crop"
+                alt="Artisan food bowl"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--forest)] via-transparent to-transparent opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--forest)]/60 via-transparent to-transparent" />
             </div>
-
-            {/* Floating order card */}
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ repeat: Infinity, duration: 3.5, ease: "easeInOut" }}
-              className="absolute -bottom-6 -right-6 p-5 rounded-2xl glass-cream"
-              style={{ boxShadow: "0 20px 50px rgba(0,0,0,0.12)", minWidth: "180px" }}
-            >
-              <p className="text-sm font-semibold mb-1" style={{ color: "var(--forest)" }}>
-                Order Delivered
-              </p>
-              <p className="text-xs mb-3" style={{ color: "var(--text-muted)" }}>
-                Heritage Grain Bowl
-              </p>
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{ background: "var(--forest)" }}
-                >
-                  <ShoppingBag size={12} color="white" />
-                </div>
-                <span className="text-xs font-medium" style={{ color: "var(--olive)" }}>
-                  Delivered in 28 mins ✓
-                </span>
-              </div>
-            </motion.div>
 
             {/* Floating food image */}
             <motion.div
-              animate={{ y: [0, -12, 0], rotate: [-3, 3, -3] }}
+              animate={{ y: [0, -12, 0], rotate: [-2, 2, -2] }}
               transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-              className="absolute -top-8 -left-8 w-28 h-28 rounded-2xl overflow-hidden"
+              className="absolute -top-8 -left-4 sm:-left-8 w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden"
               style={{ boxShadow: "0 20px 50px rgba(0,0,0,0.2)" }}
             >
               <Image
                 src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&q=80&fit=crop"
-                alt="Food"
+                alt="Fresh salad"
                 fill
                 className="object-cover"
                 sizes="112px"
@@ -92,10 +65,11 @@ export default function OrderOnline() {
           </motion.div>
 
           {/* Text side */}
-          <div>
+          <div className="order-1 lg:order-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
               className="flex items-center gap-3 mb-6"
             >
               <div className="divider" />
@@ -109,13 +83,11 @@ export default function OrderOnline() {
 
             <motion.h2
               initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: 0.1, duration: 0.8 }}
               className="text-4xl lg:text-6xl font-bold mb-6 leading-tight"
-              style={{
-                fontFamily: "var(--font-playfair)",
-                color: "var(--forest)",
-              }}
+              style={{ fontFamily: "var(--font-playfair)", color: "var(--forest)" }}
             >
               Good food,{" "}
               <span className="italic" style={{ color: "var(--gold)" }}>
@@ -126,7 +98,8 @@ export default function OrderOnline() {
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
               transition={{ delay: 0.2 }}
               className="text-lg leading-relaxed mb-10"
               style={{
@@ -140,18 +113,14 @@ export default function OrderOnline() {
             </motion.p>
 
             {/* Highlights */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3 }}
-              className="space-y-4 mb-10"
-            >
+            <div className="space-y-4 mb-10">
               {highlights.map((h, i) => (
                 <motion.div
                   key={h.label}
                   initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ delay: 0.4 + i * 0.08 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.1 }}
                   className="flex items-center gap-4"
                 >
                   <div
@@ -172,31 +141,30 @@ export default function OrderOnline() {
                   </div>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.5 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <a
-                href="https://maps.app.goo.gl/tQUgFiwQteX2hpBv9"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={openOrder}
                 className="btn-primary ripple-btn"
               >
                 <ShoppingBag size={18} />
                 <span>Order Online</span>
-              </a>
-              <a
-                href="https://maps.app.goo.gl/tQUgFiwQteX2hpBv9"
-                target="_blank"
-                rel="noopener noreferrer"
+              </button>
+              <button
+                type="button"
+                onClick={openReserve}
                 className="btn-secondary"
               >
-                View on Maps
-              </a>
+                Reserve a Table
+              </button>
             </motion.div>
           </div>
         </div>

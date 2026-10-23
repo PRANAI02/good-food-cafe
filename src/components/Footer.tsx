@@ -1,12 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Leaf, Share2, Link, Send, MapPin, Clock, Phone, Heart } from "lucide-react";
+import { Leaf, Share2, Link, Send, MapPin, Clock, Phone, Heart, Check } from "lucide-react";
+import { useModal } from "@/context/ModalContext";
+import { useOpenStatus } from "@/lib/useOpenStatus";
+
+const SITE_URL = "https://good-food-cafe.vercel.app";
+const SHARE_TEXT =
+  "The Good Food Cafe by Nature's Basket — artisan food & specialty coffee on MG Road, Bengaluru.";
 
 const quickLinks = [
   { label: "About Us", href: "#about" },
   { label: "Our Menu", href: "#dishes" },
-  { label: "Gallery", href: "#gallery" },
   { label: "Reviews", href: "#reviews" },
   { label: "Reserve a Table", href: "#reservation" },
   { label: "Order Online", href: "#order" },
@@ -14,9 +20,34 @@ const quickLinks = [
 ];
 
 export default function Footer() {
+  const { openReserve, openOrder } = useModal();
+  const [copied, setCopied] = useState(false);
+  const openStatus = useOpenStatus();
   const scrollTo = (href: string) => {
     const id = href.replace("#", "");
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "The Good Food Cafe", text: SHARE_TEXT, url: SITE_URL });
+      } catch {
+        /* user dismissed the share sheet */
+      }
+    } else {
+      handleCopy();
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(SITE_URL);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard unavailable */
+    }
   };
 
   return (
@@ -67,25 +98,54 @@ export default function Footer() {
               and warm hospitality in the heart of MG Road.
             </p>
 
-            {/* Socials */}
+            {/* Share actions */}
             <div className="flex gap-3">
-              {[
-                { icon: Share2, href: "#" },
-                { icon: Link, href: "#" },
-                { icon: Send, href: "#" },
-              ].map(({ icon: Icon, href }, i) => (
-                <a
-                  key={i}
-                  href={href}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:scale-110"
-                  style={{
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                  }}
-                >
-                  <Icon size={16} color="rgba(255,255,255,0.6)" />
-                </a>
-              ))}
+              <button
+                type="button"
+                onClick={handleShare}
+                aria-label="Share this website"
+                title="Share"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:scale-110 cursor-pointer"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                }}
+              >
+                <Share2 size={16} color="rgba(255,255,255,0.6)" />
+              </button>
+              <button
+                type="button"
+                onClick={handleCopy}
+                aria-label="Copy website link"
+                title={copied ? "Copied!" : "Copy link"}
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:scale-110 cursor-pointer"
+                style={{
+                  background: copied ? "rgba(74,222,128,0.15)" : "rgba(255,255,255,0.06)",
+                  border: copied
+                    ? "1px solid rgba(74,222,128,0.4)"
+                    : "1px solid rgba(255,255,255,0.1)",
+                }}
+              >
+                {copied ? (
+                  <Check size={16} color="#4ade80" />
+                ) : (
+                  <Link size={16} color="rgba(255,255,255,0.6)" />
+                )}
+              </button>
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`${SHARE_TEXT} ${SITE_URL}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Share on WhatsApp"
+                title="Share on WhatsApp"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:scale-110"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                }}
+              >
+                <Send size={16} color="rgba(255,255,255,0.6)" />
+              </a>
             </div>
           </div>
 
@@ -101,7 +161,11 @@ export default function Footer() {
               {quickLinks.map((link) => (
                 <li key={link.href}>
                   <button
-                    onClick={() => scrollTo(link.href)}
+                    onClick={() => {
+                      if (link.label === "Reserve a Table") { openReserve(); return; }
+                      if (link.label === "Order Online") { openOrder(); return; }
+                      scrollTo(link.href);
+                    }}
                     className="text-sm transition-colors text-left"
                     style={{ color: "rgba(255,255,255,0.5)" }}
                     onMouseEnter={(e) =>
@@ -141,13 +205,23 @@ export default function Footer() {
                   </p>
                 </div>
               ))}
-              <div
-                className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-                style={{ background: "rgba(44,74,46,0.4)", border: "1px solid rgba(44,74,46,0.6)" }}
-              >
-                <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-xs text-green-300">Open Now</span>
-              </div>
+              {openStatus && (
+                <div
+                  className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                  style={{ background: "rgba(44,74,46,0.4)", border: "1px solid rgba(44,74,46,0.6)" }}
+                >
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      openStatus.isOpen ? "bg-green-400 animate-pulse" : "bg-red-400"
+                    }`}
+                  />
+                  <span
+                    className={`text-xs ${openStatus.isOpen ? "text-green-300" : "text-red-300"}`}
+                  >
+                    {openStatus.label}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -171,7 +245,7 @@ export default function Footer() {
               <div className="flex items-center gap-3">
                 <Phone size={16} style={{ color: "var(--gold)" }} />
                 <a
-                  href="tel:+918040400000"
+                  href="tel:+918050050555"
                   className="text-sm transition-colors"
                   style={{ color: "rgba(255,255,255,0.55)" }}
                   onMouseEnter={(e) => ((e.target as HTMLElement).style.color = "white")}
@@ -179,7 +253,7 @@ export default function Footer() {
                     ((e.target as HTMLElement).style.color = "rgba(255,255,255,0.55)")
                   }
                 >
-                  +91 80 4040 0000
+                  +91 80500 50555
                 </a>
               </div>
               <div className="flex items-center gap-3">

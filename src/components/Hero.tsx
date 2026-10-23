@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ArrowDown, Calendar, ShoppingBag } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useModal } from "@/context/ModalContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,6 +16,7 @@ export default function Hero() {
   const { scrollY } = useScroll();
   const bgY = useTransform(scrollY, [0, 800], [0, 180]);
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+  const { openReserve, openOrder } = useModal();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -147,8 +149,8 @@ export default function Hero() {
         }}
       />
 
-      {/* Floating food images */}
-      <div className="absolute inset-0 pointer-events-none z-20">
+      {/* Floating food images — desktop only; on narrow screens they collide with the centered content */}
+      <div className="absolute inset-0 pointer-events-none z-20 hidden md:block">
         {/* Salad bowl - top left */}
         <div
           className="hero-food parallax-layer-3 absolute top-[18%] left-[8%] w-28 h-28 lg:w-40 lg:h-40 rounded-full overflow-hidden floating"
@@ -230,18 +232,18 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.7 }}
-          className="inline-flex items-center gap-2 mb-5 px-5 py-2 rounded-full glass"
+          className="inline-flex items-center gap-2 mb-5 px-4 py-2 rounded-full glass"
           style={{ border: "1px solid rgba(201,168,76,0.4)" }}
         >
           <span
-            className="text-xs font-medium tracking-[0.2em] uppercase"
+            className="text-[10px] sm:text-xs font-medium tracking-[0.15em] sm:tracking-[0.2em] uppercase whitespace-nowrap"
             style={{ color: "var(--gold)" }}
           >
-            Nature&apos;s Basket Artisan Pantry
+            Nature&apos;s Basket
           </span>
-          <span className="w-1 h-1 rounded-full bg-[var(--gold)]" />
+          <span className="w-1 h-1 rounded-full flex-shrink-0 bg-[var(--gold)]" />
           <span
-            className="text-xs font-medium tracking-[0.2em] uppercase"
+            className="text-[10px] sm:text-xs font-medium tracking-[0.15em] sm:tracking-[0.2em] uppercase whitespace-nowrap"
             style={{ color: "var(--gold)" }}
           >
             MG Road, Bengaluru
@@ -278,26 +280,23 @@ export default function Hero() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href="https://maps.app.goo.gl/tQUgFiwQteX2hpBv9"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hero-btn btn-gold ripple-btn text-sm font-medium"
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={openReserve}
+            className="btn-gold ripple-btn inline-flex items-center gap-2 text-sm font-medium"
           >
             <Calendar size={16} />
             <span>Reserve a Table</span>
-          </a>
-          <a
-            href="https://maps.app.goo.gl/tQUgFiwQteX2hpBv9"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hero-btn glass ripple-btn inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-medium text-white"
-            style={{ border: "1.5px solid rgba(255,255,255,0.4)" }}
+          </button>
+          <button
+            type="button"
+            onClick={openOrder}
+            className="btn-outline ripple-btn text-sm font-medium"
           >
             <ShoppingBag size={16} />
             <span>Order Online</span>
-          </a>
+          </button>
         </div>
 
         {/* Stats */}
@@ -305,21 +304,20 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.8, duration: 0.8 }}
-          className="flex items-center justify-center gap-8 mt-8"
+          className="flex items-center justify-center gap-4 sm:gap-8 mt-8 px-4"
         >
           {[
-            { num: "4.5★", label: "Google Rating" },
-            { num: "500+", label: "Happy Customers" },
-            { num: "100%", label: "Fresh Ingredients" },
+            { num: "4.8★", label: "Google Rating" },
+            { num: "100%", label: "Fresh" },
           ].map((stat) => (
-            <div key={stat.label} className="text-center">
+            <div key={stat.label} className="text-center min-w-0">
               <p
-                className="text-2xl font-bold"
+                className="text-xl sm:text-2xl font-bold"
                 style={{ color: "var(--gold)", fontFamily: "var(--font-playfair)" }}
               >
                 {stat.num}
               </p>
-              <p className="text-xs text-white/60 tracking-wide mt-1">{stat.label}</p>
+              <p className="text-[10px] sm:text-xs text-white/60 tracking-wide mt-1 whitespace-nowrap">{stat.label}</p>
             </div>
           ))}
         </motion.div>

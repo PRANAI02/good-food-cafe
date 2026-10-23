@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -34,7 +35,77 @@ const showcase = [
   },
 ];
 
-export default function FoodShowcase() {
+/* ─── Mobile: simple vertical stack ─── */
+function MobileShowcase() {
+  return (
+    <section className="md:hidden">
+      {showcase.map((item, i) => (
+        <div
+          key={item.name}
+          className="relative h-[70vw] min-h-[280px] overflow-hidden"
+          style={{ background: "#0D1F0E" }}
+        >
+          <motion.div
+            className="absolute inset-0"
+            initial={{ scale: 1.15 }}
+            whileInView={{ scale: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+          >
+            <Image
+              src={item.img}
+              alt={item.name}
+              fill
+              className="object-cover"
+              sizes="100vw"
+              priority={i === 0}
+            />
+          </motion.div>
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(135deg, ${item.color}CC 0%, rgba(0,0,0,0.55) 100%)`,
+            }}
+          />
+          {/* Counter */}
+          <div className="absolute top-5 right-5 text-right">
+            <span
+              className="text-5xl font-bold leading-none opacity-20 select-none text-white"
+              style={{ fontFamily: "var(--font-playfair)" }}
+            >
+              0{i + 1}
+            </span>
+          </div>
+          {/* Text */}
+          <motion.div
+            className="absolute bottom-8 left-6 z-10 max-w-xs"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.23, 1, 0.32, 1] }}
+          >
+            <p
+              className="text-[11px] tracking-[0.25em] uppercase mb-2"
+              style={{ color: "rgba(201,168,76,0.9)" }}
+            >
+              {item.sub}
+            </p>
+            <h2
+              className="text-4xl font-bold text-white leading-tight"
+              style={{ fontFamily: "var(--font-playfair)" }}
+            >
+              {item.name}
+            </h2>
+            <div className="mt-3 h-0.5 w-16 bg-gradient-to-r from-[var(--gold)] to-transparent" />
+          </motion.div>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+/* ─── Desktop: GSAP horizontal pin ─── */
+function DesktopShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -42,82 +113,65 @@ export default function FoodShowcase() {
     if (!containerRef.current || !wrapperRef.current) return;
 
     const items = containerRef.current.querySelectorAll(".showcase-item");
-    const totalWidth = (items.length - 1) * 100; // vw units: 300
-    const pinDuration = totalWidth * 10; // px: 3000
+    const totalWidth = (items.length - 1) * 100; // vw units
+    const pinDuration = totalWidth * 10;          // px
 
-    // Set section height = pin duration + 1 viewport so there's no dead scroll
     containerRef.current.style.height = `${pinDuration + window.innerHeight}px`;
 
     const ctx = gsap.context(() => {
-      // Horizontal pin + scroll
       gsap.to(wrapperRef.current, {
         x: `-${totalWidth}vw`,
         ease: "none",
         scrollTrigger: {
+          // The inner viewport div is already pinned via CSS `sticky`,
+          // so GSAP doesn't need its own pin here — adding one causes a
+          // rendering glitch where the two pinning mechanisms hand off.
           trigger: containerRef.current,
           start: "top top",
           end: `+=${pinDuration}`,
           scrub: 1.2,
-          pin: true,
-          anticipatePin: 1,
         },
       });
 
-      // Each item animations
-      const step = pinDuration / (items.length - 1); // px per slide transition
+      const step = pinDuration / (items.length - 1);
       items.forEach((item, i) => {
-        const img = item.querySelector(".showcase-img");
-        const text = item.querySelector(".showcase-text");
+        const img    = item.querySelector(".showcase-img");
+        const text   = item.querySelector(".showcase-text");
         const circle = item.querySelector(".showcase-circle");
 
         if (i > 0) {
-          gsap.fromTo(
-            img,
-            { scale: 1.3, opacity: 0, rotationY: 15 },
-            {
-              scale: 1,
-              opacity: 1,
-              rotationY: 0,
-              duration: 1,
-              ease: "power2.out",
+          // Scale-only reveal — no opacity:0, no rotationY (Safari 3D causes blank slides)
+          gsap.fromTo(img,
+            { scale: 1.12 },
+            { scale: 1, ease: "power2.out",
               scrollTrigger: {
                 trigger: containerRef.current,
                 start: `top+=${(i - 0.5) * step} top`,
-                end: `top+=${i * step} top`,
+                end:   `top+=${i * step} top`,
                 scrub: 1,
               },
             }
           );
-
-          gsap.fromTo(
-            text,
+          gsap.fromTo(text,
             { y: 60, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.8,
+            { y: 0, opacity: 1, duration: 0.8,
               scrollTrigger: {
                 trigger: containerRef.current,
                 start: `top+=${(i - 0.3) * step} top`,
-                end: `top+=${i * step} top`,
+                end:   `top+=${i * step} top`,
                 scrub: 1,
               },
             }
           );
         }
 
-        // Scale circle on reveal
-        gsap.fromTo(
-          circle,
+        gsap.fromTo(circle,
           { scale: 0 },
-          {
-            scale: 1,
-            duration: 0.6,
-            ease: "back.out(1.4)",
+          { scale: 1, duration: 0.6, ease: "back.out(1.4)",
             scrollTrigger: {
               trigger: containerRef.current,
               start: `top+=${Math.max(0, i - 0.4) * step} top`,
-              end: `top+=${i * step} top`,
+              end:   `top+=${i * step} top`,
               scrub: 1,
             },
           }
@@ -129,11 +183,9 @@ export default function FoodShowcase() {
   }, []);
 
   return (
-    <section className="relative" ref={containerRef}>
-      {/* Background label */}
+    <section className="relative hidden md:block" ref={containerRef}>
       <div className="sticky top-0 h-screen overflow-hidden">
-        {/* Section header - visible only at very top */}
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 z-20 text-center">
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 z-20 text-center pointer-events-none">
           <span
             className="text-xs font-medium tracking-[0.25em] uppercase"
             style={{ color: "var(--gold)" }}
@@ -149,7 +201,6 @@ export default function FoodShowcase() {
               className="showcase-item relative w-screen h-screen flex-shrink-0 overflow-hidden"
               style={{ background: "#0D1F0E" }}
             >
-              {/* Full BG image */}
               <div className="showcase-img absolute inset-0">
                 <Image
                   src={item.img}
@@ -167,14 +218,10 @@ export default function FoodShowcase() {
                 />
               </div>
 
-              {/* Counter */}
               <div className="absolute top-12 right-12 z-10 text-right">
                 <span
                   className="text-[5rem] font-bold leading-none opacity-20 select-none"
-                  style={{
-                    color: "white",
-                    fontFamily: "var(--font-playfair)",
-                  }}
+                  style={{ color: "white", fontFamily: "var(--font-playfair)" }}
                 >
                   0{i + 1}
                 </span>
@@ -183,13 +230,11 @@ export default function FoodShowcase() {
                 </span>
               </div>
 
-              {/* Center circle decoration */}
               <div
                 className="showcase-circle absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/10 pointer-events-none"
                 style={{ transform: "translate(-50%, -50%) scale(0)" }}
               />
 
-              {/* Text */}
               <div className="showcase-text absolute bottom-20 left-16 z-10 max-w-lg">
                 <p
                   className="text-sm tracking-[0.3em] uppercase mb-4"
@@ -203,12 +248,9 @@ export default function FoodShowcase() {
                 >
                   {item.name}
                 </h2>
-
-                {/* Line */}
                 <div className="mt-6 h-0.5 w-24 bg-gradient-to-r from-[var(--gold)] to-transparent" />
               </div>
 
-              {/* Scroll hint */}
               {i < showcase.length - 1 && (
                 <div className="absolute right-8 bottom-1/2 translate-y-1/2 z-10 flex flex-col items-center gap-2 text-white/30">
                   <div className="h-16 w-px bg-gradient-to-b from-transparent to-white/40" />
@@ -222,5 +264,14 @@ export default function FoodShowcase() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function FoodShowcase() {
+  return (
+    <>
+      <MobileShowcase />
+      <DesktopShowcase />
+    </>
   );
 }
